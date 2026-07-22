@@ -38,14 +38,87 @@ void place_mine(char board[][BOARD_SIZE]) {
     }
 }
 
+void compute_counts(char original[][BOARD_SIZE], char counts[][BOARD_SIZE]) {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            counts[row][col] = '0';
+        }
+    }
+
+    // Count the number of mines in each row
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (original[row][col] == '*') {
+                counts[row][col] = '*';
+                continue;
+            }
+
+            int count = 0;
+            // -1, -1
+            if (row - 1 >= 0 && col - 1 >= 0) {
+                if (original[row - 1][col - 1] == '*') {
+                    count++;
+                }
+            }
+            // -1, 0
+            if (row - 1 >= 0) {
+                if (original[row - 1][col] == '*') {
+                    count++;
+                }
+            }
+            // -1, 1
+            if (row - 1 >= 0 && col + 1 < BOARD_SIZE) {
+                if (original[row - 1][col + 1] == '*') {
+                    count++;
+                }
+            }
+            // 0, -1
+            if (col - 1 >= 0) {
+                if (original[row][col - 1] == '*') {
+                    count++;
+                }
+            }
+            // 0, 1
+            if (col + 1 < BOARD_SIZE) {
+                if (original[row][col + 1] == '*') {
+                    count++;
+                }
+            }
+            // 1, -1
+            if (row + 1 < BOARD_SIZE && col - 1 >= 0) {
+                if (original[row + 1][col - 1] == '*') {
+                    count++;
+                }
+            }
+            // 1, 0
+            if (row + 1 < BOARD_SIZE) {
+                if (original[row + 1][col] == '*') {
+                    count++;
+                }
+            }
+            // 1, 1
+            if (row + 1 < BOARD_SIZE && col + 1 < BOARD_SIZE) {
+                if (original[row + 1][col + 1] == '*') {
+                    count++;
+                }
+            }
+
+            counts[row][col] = count + '0';
+        }
+    }
+}
+
 int main(void) {
     srand(time(NULL));
     printf("Welcome to Minesweeper!\n");
 
     char board[BOARD_SIZE][BOARD_SIZE];
+    char counts[BOARD_SIZE][BOARD_SIZE];
     init_board(board);
     place_mine(board);
     print_board(board);
+    compute_counts(board, counts);
+    print_board(counts);
 
     return 0;
 }
