@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 
 #define BOARD_SIZE 9
 #define NUM_MINES 10
@@ -108,17 +109,55 @@ void compute_counts(char original[][BOARD_SIZE], char counts[][BOARD_SIZE]) {
     }
 }
 
+void init_revealed(bool revealed[][BOARD_SIZE]) {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            revealed[row][col] = false;
+        }
+    }
+}
+
+void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (revealed[row][col] == true) {
+                printf("%c ", board[row][col]);
+            } else {
+                printf(". ");
+            }
+        }
+        printf("\n");
+    }
+}
+
 int main(void) {
     srand(time(NULL));
     printf("Welcome to Minesweeper!\n");
 
     char board[BOARD_SIZE][BOARD_SIZE];
     char counts[BOARD_SIZE][BOARD_SIZE];
+    bool revealed[BOARD_SIZE][BOARD_SIZE];
     init_board(board);
     place_mine(board);
-    print_board(board);
+    // print_board(board);
     compute_counts(board, counts);
-    print_board(counts);
+    // print_board(counts);
+    init_revealed(revealed);
+
+    int row, col;
+
+    while (true) {
+        printf("Enter row and column (0-8): ");
+        scanf("%d %d", &row, &col);
+
+        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+            printf("Invalid row or column\n");
+            continue;
+        }
+
+        revealed[row][col] = true;
+        print_display(counts, revealed);
+    }
 
     return 0;
 }
