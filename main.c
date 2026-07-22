@@ -155,6 +155,22 @@ void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], int row, 
     flood_fill(count, revealed, row + 1, col + 1);
 }
 
+bool is_win(char counts[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (counts[row][col] == '*') {
+                continue;
+            }
+
+            if (revealed[row][col] == false) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 
 int main(void) {
     srand(time(NULL));
@@ -165,9 +181,7 @@ int main(void) {
     bool revealed[BOARD_SIZE][BOARD_SIZE];
     init_board(board);
     place_mine(board);
-    // print_board(board);
     compute_counts(board, counts);
-    // print_board(counts);
     init_revealed(revealed);
 
     int row, col;
@@ -182,7 +196,19 @@ int main(void) {
         }
 
         flood_fill(counts, revealed, row, col);
+
+        if (board[row][col] == '*') {
+            printf("You have lost!\n");
+            print_board(counts);
+            break;
+        }
+
         print_display(counts, revealed);
+
+        if (is_win(counts, revealed)) {
+            printf("You have won!\n");
+            break;
+        }
     }
 
     return 0;
