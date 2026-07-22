@@ -130,6 +130,32 @@ void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
     }
 }
 
+void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], int row, int col) {
+    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+        return;
+    }
+
+    if (revealed[row][col]) {
+        return;
+    }
+
+    revealed[row][col] = true;
+
+    if (count[row][col] != '0') {
+        return;
+    }
+
+    flood_fill(count, revealed, row - 1, col - 1);
+    flood_fill(count, revealed, row - 1, col);
+    flood_fill(count, revealed, row - 1, col + 1);
+    flood_fill(count, revealed, row, col - 1);
+    flood_fill(count, revealed, row, col + 1);
+    flood_fill(count, revealed, row + 1, col - 1);
+    flood_fill(count, revealed, row + 1, col);
+    flood_fill(count, revealed, row + 1, col + 1);
+}
+
+
 int main(void) {
     srand(time(NULL));
     printf("Welcome to Minesweeper!\n");
@@ -155,7 +181,7 @@ int main(void) {
             continue;
         }
 
-        revealed[row][col] = true;
+        flood_fill(counts, revealed, row, col);
         print_display(counts, revealed);
     }
 
