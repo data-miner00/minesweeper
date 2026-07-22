@@ -109,19 +109,21 @@ void compute_counts(char original[][BOARD_SIZE], char counts[][BOARD_SIZE]) {
     }
 }
 
-void init_revealed(bool revealed[][BOARD_SIZE]) {
+void init_bool_board(bool board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            revealed[row][col] = false;
+            board[row][col] = false;
         }
     }
 }
 
-void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
+void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE], bool flagged[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
             if (revealed[row][col] == true) {
                 printf("%c ", board[row][col]);
+            } else if (flagged[row][col] == true) {
+                printf("F ");
             } else {
                 printf(". ");
             }
@@ -130,12 +132,12 @@ void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
     }
 }
 
-void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], int row, int col) {
+void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], bool flagged[][BOARD_SIZE], int row, int col) {
     if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
         return;
     }
 
-    if (revealed[row][col]) {
+    if (revealed[row][col] || flagged[row][col]) {
         return;
     }
 
@@ -145,14 +147,14 @@ void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], int row, 
         return;
     }
 
-    flood_fill(count, revealed, row - 1, col - 1);
-    flood_fill(count, revealed, row - 1, col);
-    flood_fill(count, revealed, row - 1, col + 1);
-    flood_fill(count, revealed, row, col - 1);
-    flood_fill(count, revealed, row, col + 1);
-    flood_fill(count, revealed, row + 1, col - 1);
-    flood_fill(count, revealed, row + 1, col);
-    flood_fill(count, revealed, row + 1, col + 1);
+    flood_fill(count, revealed, flagged, row - 1, col - 1);
+    flood_fill(count, revealed, flagged, row - 1, col);
+    flood_fill(count, revealed, flagged, row - 1, col + 1);
+    flood_fill(count, revealed, flagged, row, col - 1);
+    flood_fill(count, revealed, flagged, row, col + 1);
+    flood_fill(count, revealed, flagged, row + 1, col - 1);
+    flood_fill(count, revealed, flagged, row + 1, col);
+    flood_fill(count, revealed, flagged, row + 1, col + 1);
 }
 
 bool is_win(char counts[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
@@ -179,40 +181,56 @@ int main(void) {
     char board[BOARD_SIZE][BOARD_SIZE];
     char counts[BOARD_SIZE][BOARD_SIZE];
     bool revealed[BOARD_SIZE][BOARD_SIZE];
+    bool flagged[BOARD_SIZE][BOARD_SIZE];
     init_board(board);
     place_mine(board);
     compute_counts(board, counts);
-    init_revealed(revealed);
+    init_bool_board(revealed);
+    init_bool_board(flagged);
 
     int row, col;
+    char cmd;
 
     while (true) {
-        printf("Enter row and column (0-8): ");
-        scanf("%d %d", &row, &col);
+        printf("Enter cmd, row and column (0-8): ");
+        scanf(" %c %d %d", &cmd, &row, &col);
 
         if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
             printf("Invalid row or column\n");
             continue;
         }
 
-        if (revealed[row][col] == true) {
-            printf("You have already revealed this cell\n");
-            continue;
-        }
+        if (cmd == 'r') {
+            if (revealed[row][col] == true) {
+                printf("You have already revealed this cell\n");
+                continue;
+            }
 
-        flood_fill(counts, revealed, row, col);
+            if (flagged[row][col] == true) {
+                printf("This cell is flagged. Unflag it first.\n");
+                continue;
+            }
 
-        if (board[row][col] == '*') {
-            printf("You have lost!\n");
-            print_board(counts);
-            break;
-        }
+            flood_fill(counts, revealed, flagged, row, col);
 
-        print_display(counts, revealed);
+            if (board[row][col] == '*') {
+                printf("You have lost!\n");
+                print_board(counts);
+                break;
+            }
 
-        if (is_win(counts, revealed)) {
-            printf("You have won!\n");
-            break;
+            print_display(counts, revealed, flagged);
+
+            if (is_win(counts, revealed)) {
+                printf("You have won!\n");
+                break;
+            }
+        } else if (cmd == 'f') {
+            flagged[row][col] = !flagged[row][col];
+
+            print_display(counts, revealed, flagged);
+        } else {
+            printf("Invalid command\n");
         }
     }
 
