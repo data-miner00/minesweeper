@@ -195,6 +195,11 @@ int main(void) {
             continue;
         }
 
+        if (revealed[row][col] == true) {
+            printf("You have already revealed this cell\n");
+            continue;
+        }
+
         flood_fill(counts, revealed, row, col);
 
         if (board[row][col] == '*') {
