@@ -6,7 +6,6 @@
 #define BOARD_SIZE 9
 #define NUM_MINES 10
 
-
 void init_board(char board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
@@ -117,7 +116,8 @@ void init_bool_board(bool board[][BOARD_SIZE]) {
     }
 }
 
-void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE], bool flagged[][BOARD_SIZE]) {
+void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE],
+                   bool flagged[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
             if (revealed[row][col] == true) {
@@ -132,7 +132,8 @@ void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE], bool f
     }
 }
 
-void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], bool flagged[][BOARD_SIZE], int row, int col) {
+void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], bool flagged[][BOARD_SIZE],
+                int row, int col) {
     if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
         return;
     }
@@ -172,7 +173,6 @@ bool is_win(char counts[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
 
     return true;
 }
-
 
 int main(void) {
     srand(time(NULL));
