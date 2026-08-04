@@ -100,7 +100,17 @@ void compute_counts(int size, Cell board[][size]) {
 }
 
 void print_board(int size, Cell board[][size], bool is_reveal_all) {
+    printf("    ");
+    for (int col = 0; col < size; col++) {
+        printf("%d ", col);
+    }
+    printf("\n    ");
+    for (int col = 0; col < size; col++) {
+        printf("--");
+    }
+    printf("\n");
     for (int row = 0; row < size; row++) {
+        printf("%d | ", row);
         for (int col = 0; col < size; col++) {
             if (is_reveal_all) {
                 if (board[row][col].is_mine) {
@@ -118,8 +128,17 @@ void print_board(int size, Cell board[][size], bool is_reveal_all) {
                 }
             }
         }
-        printf("\n");
+        printf(" | %d\n", row);
     }
+    printf("    ");
+    for (int col = 0; col < size; col++) {
+        printf("--");
+    }
+    printf("\n    ");
+    for (int col = 0; col < size; col++) {
+        printf("%d ", col);
+    }
+    printf("\n");
 }
 
 void flood_fill(int size, Cell board[][size], int row, int col) {
