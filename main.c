@@ -186,7 +186,7 @@ int main(void) {
     char cmd;
 
     while (true) {
-        printf("Enter cmd (f/r), row, column (0-8): ");
+        printf("Enter cmd (f/r/q), row, column (0-8): ");
         scanf(" %c %d %d", &cmd, &row, &col);
 
         if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
@@ -223,6 +223,9 @@ int main(void) {
             board[row][col].is_flagged = !board[row][col].is_flagged;
 
             print_board(board, false);
+        } else if (cmd == 'q') {
+            printf("Goodbye!\n");
+            break;
         } else {
             printf("Invalid command\n");
         }
