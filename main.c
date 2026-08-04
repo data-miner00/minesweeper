@@ -6,24 +6,38 @@
 #define BOARD_SIZE 9
 #define NUM_MINES 10
 
-void init_board(char board[][BOARD_SIZE]) {
+typedef struct {
+    bool is_mine;
+    int adjacent_count;
+    bool is_revealed;
+    bool is_flagged;
+} Cell;
+
+void init_board(Cell board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            board[row][col] = '.';
+            board[row][col].is_mine = false;
+            board[row][col].adjacent_count = 0;
+            board[row][col].is_revealed = false;
+            board[row][col].is_flagged = false;
         }
     }
 }
 
-void print_board(char board[][BOARD_SIZE]) {
+void print_board(Cell board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            printf("%c ", board[row][col]);
+            if (board[row][col].is_mine) {
+                printf("* ");
+            } else {
+                printf("%d ", board[row][col].adjacent_count);
+            }
         }
         printf("\n");
     }
 }
 
-void place_mine(char board[][BOARD_SIZE]) {
+void place_mine(Cell board[][BOARD_SIZE]) {
     for (int mines = 0; mines < NUM_MINES; mines++) {
 
         int row;
@@ -32,97 +46,88 @@ void place_mine(char board[][BOARD_SIZE]) {
         do {
             row = rand() % BOARD_SIZE;
             col = rand() % BOARD_SIZE;
-        } while (board[row][col] == '*');
+        } while (board[row][col].is_mine);
 
-        board[row][col] = '*';
+        board[row][col].is_mine = true;
     }
 }
 
-void compute_counts(char original[][BOARD_SIZE], char counts[][BOARD_SIZE]) {
+void compute_counts(Cell board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            counts[row][col] = '0';
+            board[row][col].adjacent_count = 0;
         }
     }
 
     // Count the number of mines in each row
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            if (original[row][col] == '*') {
-                counts[row][col] = '*';
+            if (board[row][col].is_mine) {
+                board[row][col].adjacent_count = -1;
                 continue;
             }
 
             int count = 0;
             // -1, -1
             if (row - 1 >= 0 && col - 1 >= 0) {
-                if (original[row - 1][col - 1] == '*') {
+                if (board[row - 1][col - 1].is_mine) {
                     count++;
                 }
             }
             // -1, 0
             if (row - 1 >= 0) {
-                if (original[row - 1][col] == '*') {
+                if (board[row - 1][col].is_mine) {
                     count++;
                 }
             }
             // -1, 1
             if (row - 1 >= 0 && col + 1 < BOARD_SIZE) {
-                if (original[row - 1][col + 1] == '*') {
+                if (board[row - 1][col + 1].is_mine) {
                     count++;
                 }
             }
             // 0, -1
             if (col - 1 >= 0) {
-                if (original[row][col - 1] == '*') {
+                if (board[row][col - 1].is_mine) {
                     count++;
                 }
             }
             // 0, 1
             if (col + 1 < BOARD_SIZE) {
-                if (original[row][col + 1] == '*') {
+                if (board[row][col + 1].is_mine) {
                     count++;
                 }
             }
             // 1, -1
             if (row + 1 < BOARD_SIZE && col - 1 >= 0) {
-                if (original[row + 1][col - 1] == '*') {
+                if (board[row + 1][col - 1].is_mine) {
                     count++;
                 }
             }
             // 1, 0
             if (row + 1 < BOARD_SIZE) {
-                if (original[row + 1][col] == '*') {
+                if (board[row + 1][col].is_mine) {
                     count++;
                 }
             }
             // 1, 1
             if (row + 1 < BOARD_SIZE && col + 1 < BOARD_SIZE) {
-                if (original[row + 1][col + 1] == '*') {
+                if (board[row + 1][col + 1].is_mine) {
                     count++;
                 }
             }
 
-            counts[row][col] = count + '0';
+            board[row][col].adjacent_count = count;
         }
     }
 }
 
-void init_bool_board(bool board[][BOARD_SIZE]) {
+void print_display(Cell board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            board[row][col] = false;
-        }
-    }
-}
-
-void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE],
-                   bool flagged[][BOARD_SIZE]) {
-    for (int row = 0; row < BOARD_SIZE; row++) {
-        for (int col = 0; col < BOARD_SIZE; col++) {
-            if (revealed[row][col] == true) {
-                printf("%c ", board[row][col]);
-            } else if (flagged[row][col] == true) {
+            if (board[row][col].is_revealed) {
+                printf("%d ", board[row][col].adjacent_count);
+            } else if (board[row][col].is_flagged) {
                 printf("F ");
             } else {
                 printf(". ");
@@ -132,40 +137,39 @@ void print_display(char board[][BOARD_SIZE], bool revealed[][BOARD_SIZE],
     }
 }
 
-void flood_fill(char count[][BOARD_SIZE], bool revealed[][BOARD_SIZE], bool flagged[][BOARD_SIZE],
-                int row, int col) {
+void flood_fill(Cell board[][BOARD_SIZE], int row, int col) {
     if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
         return;
     }
 
-    if (revealed[row][col] || flagged[row][col]) {
+    if (board[row][col].is_revealed || board[row][col].is_flagged) {
         return;
     }
 
-    revealed[row][col] = true;
+    board[row][col].is_revealed = true;
 
-    if (count[row][col] != '0') {
+    if (board[row][col].adjacent_count != 0) {
         return;
     }
 
-    flood_fill(count, revealed, flagged, row - 1, col - 1);
-    flood_fill(count, revealed, flagged, row - 1, col);
-    flood_fill(count, revealed, flagged, row - 1, col + 1);
-    flood_fill(count, revealed, flagged, row, col - 1);
-    flood_fill(count, revealed, flagged, row, col + 1);
-    flood_fill(count, revealed, flagged, row + 1, col - 1);
-    flood_fill(count, revealed, flagged, row + 1, col);
-    flood_fill(count, revealed, flagged, row + 1, col + 1);
+    flood_fill(board, row - 1, col - 1);
+    flood_fill(board, row - 1, col);
+    flood_fill(board, row - 1, col + 1);
+    flood_fill(board, row, col - 1);
+    flood_fill(board, row, col + 1);
+    flood_fill(board, row + 1, col - 1);
+    flood_fill(board, row + 1, col);
+    flood_fill(board, row + 1, col + 1);
 }
 
-bool is_win(char counts[][BOARD_SIZE], bool revealed[][BOARD_SIZE]) {
+bool is_win(Cell board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            if (counts[row][col] == '*') {
+            if (board[row][col].is_mine == true) {
                 continue;
             }
 
-            if (revealed[row][col] == false) {
+            if (board[row][col].is_revealed == false) {
                 return false;
             }
         }
@@ -178,21 +182,16 @@ int main(void) {
     srand(time(NULL));
     printf("Welcome to Minesweeper!\n");
 
-    char board[BOARD_SIZE][BOARD_SIZE];
-    char counts[BOARD_SIZE][BOARD_SIZE];
-    bool revealed[BOARD_SIZE][BOARD_SIZE];
-    bool flagged[BOARD_SIZE][BOARD_SIZE];
+    Cell board[BOARD_SIZE][BOARD_SIZE];
     init_board(board);
     place_mine(board);
-    compute_counts(board, counts);
-    init_bool_board(revealed);
-    init_bool_board(flagged);
+    compute_counts(board);
 
     int row, col;
     char cmd;
 
     while (true) {
-        printf("Enter cmd, row and column (0-8): ");
+        printf("Enter cmd (f/r), row, column (0-8): ");
         scanf(" %c %d %d", &cmd, &row, &col);
 
         if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
@@ -201,34 +200,34 @@ int main(void) {
         }
 
         if (cmd == 'r') {
-            if (revealed[row][col] == true) {
+            if (board[row][col].is_revealed == true) {
                 printf("You have already revealed this cell\n");
                 continue;
             }
 
-            if (flagged[row][col] == true) {
+            if (board[row][col].is_flagged == true) {
                 printf("This cell is flagged. Unflag it first.\n");
                 continue;
             }
 
-            flood_fill(counts, revealed, flagged, row, col);
+            flood_fill(board, row, col);
 
-            if (board[row][col] == '*') {
+            if (board[row][col].is_mine) {
                 printf("You have lost!\n");
-                print_board(counts);
+                print_board(board);
                 break;
             }
 
-            print_display(counts, revealed, flagged);
+            print_display(board);
 
-            if (is_win(counts, revealed)) {
+            if (is_win(board)) {
                 printf("You have won!\n");
                 break;
             }
         } else if (cmd == 'f') {
-            flagged[row][col] = !flagged[row][col];
+            board[row][col].is_flagged = !board[row][col].is_flagged;
 
-            print_display(counts, revealed, flagged);
+            print_display(board);
         } else {
             printf("Invalid command\n");
         }
