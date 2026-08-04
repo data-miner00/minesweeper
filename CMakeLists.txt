@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(
   Minesweeper
 
-  VERSION 1.0.0.0
+  VERSION 1.1.0.0
   DESCRIPTION "Simple Minesweeper game"
   LANGUAGES C
 )
@@ -24,5 +24,26 @@ add_executable(
 target_include_directories(
   ${PROJECT_NAME}
   PUBLIC "include"
+)
+
+find_package(Curses REQUIRED)
+
+add_executable(
+  # ncurses frontend, sharing the same board.c engine.
+  ${PROJECT_NAME}Ncurses
+
+  main_ncurses.c
+  board.c
+)
+
+target_include_directories(
+  ${PROJECT_NAME}Ncurses
+  PUBLIC "include"
+  PRIVATE ${CURSES_INCLUDE_DIR}
+)
+
+target_link_libraries(
+  ${PROJECT_NAME}Ncurses
+  ${CURSES_LIBRARIES}
 )
 

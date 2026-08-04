@@ -17,15 +17,25 @@ cmake --build .
 ./Minesweeper
 ```
 
-After the initial `cmake ..` configure, `cmake --build .` from `build/` is sufficient to rebuild after editing `main.c`.
+After the initial `cmake ..` configure, `cmake --build .` from `build/` rebuilds both executables (see below) after editing sources.
 
 There is no test suite or linter configured in this repository.
 
 ## Architecture
 
-Everything lives in a single `main.c`; there is no test suite or linter configured. `CMakeLists.txt` builds one executable (`Minesweeper`) from `main.c` and adds `include/` to the include path. `include/shaun.h` is a leftover placeholder header (currently just `int age = 28;`), not used by any real logic yet.
+The project builds **two executables from shared game logic**:
+- `Minesweeper` (`main.c` + `board.c`) — the original console frontend, `scanf`-driven.
+- `MinesweeperNcurses` (`main_ncurses.c` + `board.c`) — an in-progress ncurses frontend. Currently just an `initscr()`/`endwin()` skeleton; the ncurses render/input loop hasn't been written yet.
 
-Game state is a single `Cell board[BOARD_SIZE][BOARD_SIZE]`, where `Cell` is:
+`CMakeLists.txt` defines both targets, adds `include/` to both include paths, and links `MinesweeperNcurses` against `find_package(Curses REQUIRED)`. `include/shaun.h` is a leftover placeholder header (currently just `int age = 28;`), not used by any real logic yet.
+
+Source layout:
+- `cell.h` — the `Cell` struct (see below). Included by both frontends and by `board.c`.
+- `board.h`/`board.c` — the shared, **UI-agnostic engine**: `init_board`, `place_mine`, `compute_counts`, `flood_fill`, `is_win`. No I/O of any kind lives here by design, so both frontends can link it unchanged. If you're adding new game-logic (not rendering/input), it belongs here.
+- `main.c` — console frontend: owns `print_board` (`printf`-based rendering, not shared) plus the `scanf` REPL loop.
+- `main_ncurses.c` — ncurses frontend: will own its own rendering (e.g. `mvprintw`/`addch`) and input handling (`getch`) once written; must not touch `board.c`'s logic directly except through its existing function signatures.
+
+Game state is a single `Cell board[BOARD_SIZE][BOARD_SIZE]`, where `Cell` (in `cell.h`) is:
 
 ```c
 typedef struct {
@@ -36,12 +46,13 @@ typedef struct {
 } Cell;
 ```
 
-(This replaced an earlier design of four parallel arrays — `board`/`counts`/`revealed`/`flagged` — indexed by the same `[row][col]`; if you see references to that shape, they're stale.) Every board-manipulating function takes a single `Cell board[][BOARD_SIZE]` parameter: `init_board`, `place_mine`, `compute_counts`, `print_display`, `flood_fill`, `is_win`. `print_board` is kept as a separate function that always shows mines, used only for the full-board reveal on loss.
+(This replaced an earlier design of four parallel arrays — `board`/`counts`/`revealed`/`flagged` — indexed by the same `[row][col]`; if you see references to that shape, they're stale.) Board size is **dynamic**, not a `#define`: every `board.c` function takes a leading `int size` parameter — `Cell board[][size]` — and `size`/`numMines` are parsed from `argv` in `main` (`--size`/`-s`, `--mines`/`-m`, defaulting to 9/10). A VLA dimension can only reference an earlier parameter, which is why `size` must come before the array parameter in every signature. `main` declares `Cell board[size][size];` as a stack VLA.
 
-`BOARD_SIZE` (9) and `NUM_MINES` (10) are `#define`d at the top of `main.c`.
-
-Control flow in `main()`:
-1. Seed RNG, build the board: `init_board` (zeroes/falses every field) → `place_mine` (sets `.is_mine`) → `compute_counts` (sets `.adjacent_count`, `-1` for mine cells).
+Control flow in the console `main()` (`main.c`):
+1. Parse `size`/`numMines` from `argv`; seed RNG; build the board: `init_board` (zeroes/falses every field) → `place_mine` (sets `.is_mine`) → `compute_counts` (sets `.adjacent_count`, `-1` for mine cells).
 2. Run a REPL-style `while (true)` loop reading a command line as `scanf(" %c %d %d", &cmd, &row, &col)` — the leading space in the format string is required to skip a leftover newline before `%c`.
 3. `'r'` reveals a cell via `flood_fill` (recursive cascade through connected zero-count cells; guards against re-visiting `is_revealed`/`is_flagged` cells to avoid infinite recursion), then checks for a loss (`board[row][col].is_mine`) or win (`is_win`).
 4. `'f'` toggles `.is_flagged` for that cell without revealing anything.
+5. `'q'` exits the loop.
+
+Known unfixed bugs in `main.c`'s `argv` parsing (missing-value crash, `atoi` silent-failure on garbage input, no check that `numMines < size*size`): tracked in `PROGRESS.md`'s backlog, not yet fixed.
