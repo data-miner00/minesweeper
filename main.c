@@ -24,19 +24,6 @@ void init_board(Cell board[][BOARD_SIZE]) {
     }
 }
 
-void print_board(Cell board[][BOARD_SIZE]) {
-    for (int row = 0; row < BOARD_SIZE; row++) {
-        for (int col = 0; col < BOARD_SIZE; col++) {
-            if (board[row][col].is_mine) {
-                printf("* ");
-            } else {
-                printf("%d ", board[row][col].adjacent_count);
-            }
-        }
-        printf("\n");
-    }
-}
-
 void place_mine(Cell board[][BOARD_SIZE]) {
     for (int mines = 0; mines < NUM_MINES; mines++) {
 
@@ -122,15 +109,23 @@ void compute_counts(Cell board[][BOARD_SIZE]) {
     }
 }
 
-void print_display(Cell board[][BOARD_SIZE]) {
+void print_board(Cell board[][BOARD_SIZE], bool is_reveal_all) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            if (board[row][col].is_revealed) {
-                printf("%d ", board[row][col].adjacent_count);
-            } else if (board[row][col].is_flagged) {
-                printf("F ");
+            if (is_reveal_all) {
+                if (board[row][col].is_mine) {
+                    printf("* ");
+                } else {
+                    printf("%d ", board[row][col].adjacent_count);
+                }
             } else {
-                printf(". ");
+                if (board[row][col].is_revealed) {
+                    printf("%d ", board[row][col].adjacent_count);
+                } else if (board[row][col].is_flagged) {
+                    printf("F ");
+                } else {
+                    printf(". ");
+                }
             }
         }
         printf("\n");
@@ -214,11 +209,11 @@ int main(void) {
 
             if (board[row][col].is_mine) {
                 printf("You have lost!\n");
-                print_board(board);
+                print_board(board, true);
                 break;
             }
 
-            print_display(board);
+            print_board(board, false);
 
             if (is_win(board)) {
                 printf("You have won!\n");
@@ -227,7 +222,7 @@ int main(void) {
         } else if (cmd == 'f') {
             board[row][col].is_flagged = !board[row][col].is_flagged;
 
-            print_display(board);
+            print_board(board, false);
         } else {
             printf("Invalid command\n");
         }
