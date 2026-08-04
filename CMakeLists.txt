@@ -18,6 +18,7 @@ add_executable(
 
   # Source of executable
   main.c
+  board.c
 )
 
 target_include_directories(
