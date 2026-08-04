@@ -160,11 +160,11 @@ void flood_fill(Cell board[][BOARD_SIZE], int row, int col) {
 bool is_win(Cell board[][BOARD_SIZE]) {
     for (int row = 0; row < BOARD_SIZE; row++) {
         for (int col = 0; col < BOARD_SIZE; col++) {
-            if (board[row][col].is_mine == true) {
+            if (board[row][col].is_mine) {
                 continue;
             }
 
-            if (board[row][col].is_revealed == false) {
+            if (!board[row][col].is_revealed) {
                 return false;
             }
         }
@@ -195,12 +195,12 @@ int main(void) {
         }
 
         if (cmd == 'r') {
-            if (board[row][col].is_revealed == true) {
+            if (board[row][col].is_revealed) {
                 printf("You have already revealed this cell\n");
                 continue;
             }
 
-            if (board[row][col].is_flagged == true) {
+            if (board[row][col].is_flagged) {
                 printf("This cell is flagged. Unflag it first.\n");
                 continue;
             }
