@@ -6,6 +6,8 @@
 #include "cell.h"
 #include "board.h"
 
+void print_board(int size, Cell board[][size], bool is_reveal_all);
+
 int main(int argc, char** argv) {
     int size = 9;
     int numMines = 10;
@@ -82,4 +84,46 @@ int main(int argc, char** argv) {
     }
 
     return 0;
+}
+
+void print_board(int size, Cell board[][size], bool is_reveal_all) {
+    printf("    ");
+    for (int col = 0; col < size; col++) {
+        printf("%d ", col); // Broken if digit is larger than 9
+    }
+    printf("\n    ");
+    for (int col = 0; col < size; col++) {
+        printf("--");
+    }
+    printf("\n");
+    for (int row = 0; row < size; row++) {
+        printf("%d | ", row);
+        for (int col = 0; col < size; col++) {
+            if (is_reveal_all) {
+                if (board[row][col].is_mine) {
+                    printf("* ");
+                } else {
+                    printf("%d ", board[row][col].adjacent_count);
+                }
+            } else {
+                if (board[row][col].is_revealed) {
+                    printf("%d ", board[row][col].adjacent_count);
+                } else if (board[row][col].is_flagged) {
+                    printf("F ");
+                } else {
+                    printf(". ");
+                }
+            }
+        }
+        printf(" | %d\n", row);
+    }
+    printf("    ");
+    for (int col = 0; col < size; col++) {
+        printf("--");
+    }
+    printf("\n    ");
+    for (int col = 0; col < size; col++) {
+        printf("%d ", col);
+    }
+    printf("\n");
 }
