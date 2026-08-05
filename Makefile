@@ -1,5 +1,5 @@
 # basically a command runner
-.PHONY: build run run-ncurses rn
+.PHONY: build run run-ncurses rn test
 
 build: build/Makefile
 	cmake --build build
@@ -14,3 +14,6 @@ run-ncurses: build
 	./build/MinesweeperNcurses
 
 rn: run-ncurses
+
+test: build
+	cd build && ctest --output-on-failure

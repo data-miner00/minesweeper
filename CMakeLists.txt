@@ -49,3 +49,6 @@ target_link_libraries(
   ${CURSES_LIBRARIES}
 )
 
+enable_testing()
+add_subdirectory(tests)
+
