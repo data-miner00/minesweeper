@@ -4,10 +4,32 @@ Simple Minesweeper.
 
 ## Build & Run
 
+1. Build all
+
 ```
-clang-format -i main.c
-mkcd build
-cmake ..
-cmake --build .
-./Minesweeper
+make build
+```
+
+2. Minesweeper CLI
+
+```
+make run
+```
+
+3. Minesweeper TUI
+
+```
+make rn
+```
+
+4. Test
+
+```
+make test
+```
+
+5. Format
+
+```
+make format
 ```
