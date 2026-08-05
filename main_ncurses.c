@@ -4,9 +4,14 @@
 #include <time.h>
 #include <stdlib.h>
 
-void draw_board(int size, Cell board[][size], bool is_reveal_all) {
+void draw_board(int size, int cursorRow, int cursorCol, Cell board[][size], bool is_reveal_all) {
     for (int row = 0; row < size; row++) {
         for (int col = 0; col < size; col++) {
+            // Secondary cursor
+            if (row == cursorRow && col == cursorCol) {
+                attron(A_REVERSE);
+            }
+
             if (is_reveal_all) {
                 if (board[row][col].is_mine) {
                     mvprintw(row, col * 2, "* ");
@@ -26,7 +31,13 @@ void draw_board(int size, Cell board[][size], bool is_reveal_all) {
                     mvprintw(row, col * 2, ". ");
                 }
             }
+
+            // Secondary cursor
+            if (row == cursorRow && col == cursorCol) {
+                attroff(A_REVERSE);
+            }
         }
+
         mvprintw(row, size * 2, "\n");
         // mvprintw(row, size * 2, "%d\n", row);
     }
@@ -45,14 +56,14 @@ int main(void) {
     cbreak();              // read input char-by-char, don't wait for Enter
     noecho();              // don't auto-print typed characters
     keypad(stdscr, TRUE);  // let getch() return arrow keys etc. as single KEY_* constants
-    curs_set(1);           // hide the terminal's blinking cursor (optional, but cleaner once have cursor highlight)
+    curs_set(1);           // primary cursor
     srand(time(NULL));
 
     bool is_running = true;
 
     while (is_running && !is_win(9, board) && !is_lose(9, board)) {
         clear();
-        draw_board(9, board, false);
+        draw_board(9, row, col, board, false);
 
         move(row, col * 2);
 
@@ -103,7 +114,7 @@ int main(void) {
         getch();
     } else if (is_lose(9, board)) {
         mvprintw(11, 0, "You have lost!\n");
-        draw_board(9, board, true);
+        draw_board(9, 12, 0, board, true);
         refresh();
         getch();
     }
