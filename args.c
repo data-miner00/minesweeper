@@ -48,5 +48,19 @@ MinesweeperArgs parse_minesweeper_args(int argc, char* argv[]) {
         }
     }
 
+    if (args.size <= 0) {
+        fprintf(stderr, "Invalid size: %d (must be positive)\n", args.size);
+        exit(1);
+    }
+    if (args.numMines < 0) {
+        fprintf(stderr, "Invalid mines: %d (must be non-negative)\n", args.numMines);
+        exit(1);
+    }
+    if (args.numMines >= args.size * args.size) {
+        fprintf(stderr, "Too many mines: %d for a %dx%d board (must be less than %d)\n",
+                args.numMines, args.size, args.size, args.size * args.size);
+        exit(1);
+    }
+
     return args;
 }

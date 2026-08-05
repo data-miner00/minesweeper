@@ -41,3 +41,37 @@ set_tests_properties(
   args_valid_value PROPERTIES
   PASS_REGULAR_EXPRESSION "size=12 mines=5"
 )
+
+# 5. Non-positive size: --size -5. A VLA can't have a zero/negative
+#    dimension, so this must be rejected explicitly rather than left to
+#    misbehave.
+add_test(NAME args_invalid_size COMMAND test_args --size -5)
+set_tests_properties(
+  args_invalid_size PROPERTIES
+  PASS_REGULAR_EXPRESSION "Invalid size: -5 \\(must be positive\\)"
+)
+
+# 6. Negative mine count: -m -3. Parses fine via strtol, but doesn't make
+#    sense as a mine count and must be rejected.
+add_test(NAME args_negative_mines COMMAND test_args -m -3)
+set_tests_properties(
+  args_negative_mines PROPERTIES
+  PASS_REGULAR_EXPRESSION "Invalid mines: -3 \\(must be non-negative\\)"
+)
+
+# 7. Capacity check: --size 3 -m 9 asks for as many mines as cells (9), so
+#    place_mine's reroll loop could never find a free cell. Must be rejected
+#    before it ever reaches place_mine.
+add_test(NAME args_too_many_mines COMMAND test_args --size 3 -m 9)
+set_tests_properties(
+  args_too_many_mines PROPERTIES
+  PASS_REGULAR_EXPRESSION "Too many mines: 9 for a 3x3 board \\(must be less than 9\\)"
+)
+
+# 8. Capacity boundary: --size 3 -m 8 is exactly one below the 3x3 cell
+#    count (9), so it's the largest mine count that should still succeed.
+add_test(NAME args_mines_at_capacity_boundary COMMAND test_args --size 3 -m 8)
+set_tests_properties(
+  args_mines_at_capacity_boundary PROPERTIES
+  PASS_REGULAR_EXPRESSION "size=3 mines=8"
+)

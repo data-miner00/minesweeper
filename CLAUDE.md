@@ -19,7 +19,7 @@ cmake --build .
 
 After the initial `cmake ..` configure, `cmake --build .` from `build/` rebuilds both executables (see below) after editing sources.
 
-A CTest suite covers the shared argv-parsing logic: `tests/test_args.c` is a thin wrapper around `parse_minesweeper_args` (see `args.h`/`args.c` in Architecture below), and `tests/CMakeLists.txt` registers four subprocess-based cases — missing value, garbage value, trailing junk, valid input — via `add_test`. Subprocess-based rather than in-process because the parser calls `exit(1)` directly on bad input, so a failure can't be observed without killing the test runner itself. Run via `ctest --output-on-failure` from `build/` (or `make test`). No linter is configured.
+A CTest suite covers the shared argv-parsing logic: `tests/test_args.c` is a thin wrapper around `parse_minesweeper_args` (see `args.h`/`args.c` in Architecture below), and `tests/CMakeLists.txt` registers eight subprocess-based cases against it — missing value, garbage value, trailing junk, valid input, non-positive size, negative mines, too-many-mines, and the mines-at-capacity-boundary edge — via `add_test`. Subprocess-based rather than in-process because the parser calls `exit(1)` directly on bad input, so a failure can't be observed without killing the test runner itself. Run via `ctest --output-on-failure` from `build/` (or `make test`). No linter is configured.
 
 ## Architecture
 
@@ -32,7 +32,7 @@ The project builds **two executables from shared game logic**:
 Source layout:
 - `cell.h` — the `Cell` struct (see below). Included by both frontends and by `board.c`.
 - `board.h`/`board.c` — the shared, **UI-agnostic engine**: `init_board`, `place_mine`, `compute_counts`, `flood_fill`, `is_win`, `is_lose`. No I/O of any kind lives here by design, so both frontends can link it unchanged. If you're adding new game-logic (not rendering/input), it belongs here.
-- `args.h`/`args.c` — shared argv parsing: `parse_minesweeper_args(argc, argv)` returns a `MinesweeperArgs { int size; int numMines; }`, used identically by both frontends' `main`. Rejects malformed `--size`/`-s`/`--mines`/`-m` values (via `strtol` + `endptr` checks) with an error message and `exit(1)`; a flag with a missing value is silently ignored (falls back to the default) rather than crashing.
+- `args.h`/`args.c` — shared argv parsing: `parse_minesweeper_args(argc, argv)` returns a `MinesweeperArgs { int size; int numMines; }`, used identically by both frontends' `main`. Rejects malformed `--size`/`-s`/`--mines`/`-m` values (via `strtol` + `endptr` checks), `size <= 0`, negative `numMines`, and `numMines >= size * size` (the last one because `place_mine`'s reroll loop would otherwise spin forever once mines can't fit) — each prints an error to `stderr` and `exit(1)`s. A flag with a missing value is the one case silently ignored (falls back to the default) rather than rejected.
 - `main.c` — console frontend: owns `print_board` (`printf`-based rendering, not shared) plus the `scanf` REPL loop.
 - `main_ncurses.c` — ncurses frontend: owns `draw_board` (`mvprintw`-based rendering, including the cursor highlight) and the `getch()`-driven input loop; touches `board.c`'s logic only through its existing function signatures.
 - `tests/` — `test_args.c` is a thin wrapper around `parse_minesweeper_args` that prints `size=%d mines=%d`; `tests/CMakeLists.txt` builds it and registers four CTest cases against it as subprocesses (see Build & run above) — subprocess-based because the parser's `exit(1)` on bad input can't be observed in-process.
