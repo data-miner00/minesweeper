@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include "cell.h"
 #include "board.h"
+#include "args.h"
 #include <time.h>
 #include <stdlib.h>
 
@@ -43,12 +44,15 @@ void draw_board(int size, int cursorRow, int cursorCol, Cell board[][size], bool
     }
 }
 
-int main(void) {
+int main(int argc, char* argv[]) {
+    MinesweeperArgs args = parse_minesweeper_args(argc, argv);
+    int size = args.size;
+    int numMines = args.numMines;
 
-    Cell board[9][9];
-    init_board(9, board);
-    place_mine(9, 10, board);
-    compute_counts(9, board);
+    Cell board[size][size];
+    init_board(size, board);
+    place_mine(size, numMines, board);
+    compute_counts(size, board);
 
     int row = 0, col = 0;
 
@@ -61,9 +65,9 @@ int main(void) {
 
     bool is_running = true;
 
-    while (is_running && !is_win(9, board) && !is_lose(9, board)) {
+    while (is_running && !is_win(size, board) && !is_lose(size, board)) {
         clear();
-        draw_board(9, row, col, board, false);
+        draw_board(size, row, col, board, false);
 
         move(row, col * 2);
 
@@ -75,13 +79,13 @@ int main(void) {
                 if (row > 0) row--;
                 break;
             case KEY_DOWN:
-                if (row < 8) row++;
+                if (row < size - 1) row++;
                 break;
             case KEY_LEFT:
                 if (col > 0) col--;
                 break;
             case KEY_RIGHT:
-                if (col < 8) col++;
+                if (col < size - 1) col++;
                 break;
             case 'r':
                 if (board[row][col].is_revealed) {
@@ -89,7 +93,7 @@ int main(void) {
                 } else if (board[row][col].is_flagged) {
                     // you have already flagged this cell
                 } else {
-                    flood_fill(9, board, row, col);
+                    flood_fill(size, board, row, col);
                 }
                 break;
             case 'f':
@@ -108,13 +112,13 @@ int main(void) {
         }
     }
 
-    if (is_win(9, board)) {
-        mvprintw(11, 0, "You have won!\n");
+    if (is_win(size, board)) {
+        mvprintw(size + 2, 0, "You have won!\n");
         refresh();
         getch();
-    } else if (is_lose(9, board)) {
-        mvprintw(11, 0, "You have lost!\n");
-        draw_board(9, 12, 0, board, true);
+    } else if (is_lose(size, board)) {
+        mvprintw(size + 2, 0, "You have lost!\n");
+        draw_board(size, -1, -1, board, true);
         refresh();
         getch();
     }

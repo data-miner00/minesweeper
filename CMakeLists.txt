@@ -19,6 +19,7 @@ add_executable(
   # Source of executable
   main.c
   board.c
+  args.c
 )
 
 target_include_directories(
@@ -34,6 +35,7 @@ add_executable(
 
   main_ncurses.c
   board.c
+  args.c
 )
 
 target_include_directories(

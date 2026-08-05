@@ -2,29 +2,16 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-#include <string.h>
 #include "cell.h"
 #include "board.h"
+#include "args.h"
 
 void print_board(int size, Cell board[][size], bool is_reveal_all);
 
 int main(int argc, char** argv) {
-    int size = 9;
-    int numMines = 10;
-    if (argc > 1) {
-        if (strcmp(argv[1], "--size") == 0 || strcmp(argv[1], "-s") == 0) {
-            size = atoi(argv[2]);
-        } else if (strcmp(argv[1], "--mines") == 0 || strcmp(argv[1], "-m") == 0) {
-            numMines = atoi(argv[2]);
-        }
-    }
-    if (argc > 3) {
-        if (strcmp(argv[3], "--size") == 0 || strcmp(argv[3], "-s") == 0) {
-            size = atoi(argv[4]);
-        } else if (strcmp(argv[3], "--mines") == 0 || strcmp(argv[3], "-m") == 0) {
-            numMines = atoi(argv[4]);
-        }
-    }
+    MinesweeperArgs args = parse_minesweeper_args(argc, argv);
+    int size = args.size;
+    int numMines = args.numMines;
 
     srand(time(NULL));
     printf("Welcome to Minesweeper!\n");
