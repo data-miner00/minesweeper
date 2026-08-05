@@ -123,6 +123,7 @@ void flood_fill(int size, Cell board[][size], int row, int col) {
     flood_fill(size, board, row + 1, col + 1);
 }
 
+// When all cells that are not mines are revealed, the game is won
 bool is_win(int size, Cell board[][size]) {
     for (int row = 0; row < size; row++) {
         for (int col = 0; col < size; col++) {
@@ -139,5 +140,16 @@ bool is_win(int size, Cell board[][size]) {
     return true;
 }
 
+bool is_lose(int size, Cell board[][size]) {
+    for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
+            if (board[row][col].is_mine && board[row][col].is_revealed) {
+                return true;
+            }
+        }
+    }
+            
+    return false;
+}
 
 
