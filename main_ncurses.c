@@ -44,7 +44,7 @@ void draw_board(int size, int cursorRow, int cursorCol, Cell board[][size], bool
     }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     MinesweeperArgs args = parse_minesweeper_args(argc, argv);
     int size = args.size;
     int numMines = args.numMines;
@@ -59,10 +59,10 @@ int main(int argc, char* argv[]) {
     int row = 0, col = 0;
 
     initscr();            // enter curses mode, takes over the terminal
-    cbreak();              // read input char-by-char, don't wait for Enter
-    noecho();              // don't auto-print typed characters
-    keypad(stdscr, TRUE);  // let getch() return arrow keys etc. as single KEY_* constants
-    curs_set(1);           // primary cursor
+    cbreak();             // read input char-by-char, don't wait for Enter
+    noecho();             // don't auto-print typed characters
+    keypad(stdscr, TRUE); // let getch() return arrow keys etc. as single KEY_* constants
+    curs_set(1);          // primary cursor
 
     bool is_running = true;
 
@@ -76,40 +76,44 @@ int main(int argc, char* argv[]) {
         int ch = getch();
 
         switch (ch) {
-            case KEY_UP:
-                if (row > 0) row--;
-                break;
-            case KEY_DOWN:
-                if (row < size - 1) row++;
-                break;
-            case KEY_LEFT:
-                if (col > 0) col--;
-                break;
-            case KEY_RIGHT:
-                if (col < size - 1) col++;
-                break;
-            case 'r':
-                if (board[row][col].is_revealed) {
-                    // you have already revealed this cell
-                } else if (board[row][col].is_flagged) {
-                    // you have already flagged this cell
-                } else {
-                    flood_fill(size, board, row, col);
-                }
-                break;
-            case 'f':
-                if (board[row][col].is_revealed) {
-                    // you have already revealed this cell
-                } else {
-                    // toggle flag
-                    board[row][col].is_flagged = !board[row][col].is_flagged;
-                }
-                break;
-            case 'q':
-                is_running = false;
-                break;
-            default:
-                break;
+        case KEY_UP:
+            if (row > 0)
+                row--;
+            break;
+        case KEY_DOWN:
+            if (row < size - 1)
+                row++;
+            break;
+        case KEY_LEFT:
+            if (col > 0)
+                col--;
+            break;
+        case KEY_RIGHT:
+            if (col < size - 1)
+                col++;
+            break;
+        case 'r':
+            if (board[row][col].is_revealed) {
+                // you have already revealed this cell
+            } else if (board[row][col].is_flagged) {
+                // you have already flagged this cell
+            } else {
+                flood_fill(size, board, row, col);
+            }
+            break;
+        case 'f':
+            if (board[row][col].is_revealed) {
+                // you have already revealed this cell
+            } else {
+                // toggle flag
+                board[row][col].is_flagged = !board[row][col].is_flagged;
+            }
+            break;
+        case 'q':
+            is_running = false;
+            break;
+        default:
+            break;
         }
     }
 

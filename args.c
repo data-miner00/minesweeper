@@ -6,20 +6,20 @@
 
 // Parses str as a base-10 int into *out. Returns false (and leaves *out
 // untouched) if str has no digits at all, or has trailing junk after them.
-static bool parse_int_arg(const char* str, int* out) {
-    char* endptr;
+static bool parse_int_arg(const char *str, int *out) {
+    char *endptr;
     long value = strtol(str, &endptr, 10);
 
     if (endptr == str || *endptr != '\0') {
         return false;
     }
 
-    *out = (int) value;
+    *out = (int)value;
     return true;
 }
 
-MinesweeperArgs parse_minesweeper_args(int argc, char* argv[]) {
-    MinesweeperArgs args = { .size = 9, .numMines = 10 };
+MinesweeperArgs parse_minesweeper_args(int argc, char *argv[]) {
+    MinesweeperArgs args = {.size = 9, .numMines = 10};
 
     if (argc > 2) {
         if (strcmp(argv[1], "--size") == 0 || strcmp(argv[1], "-s") == 0) {

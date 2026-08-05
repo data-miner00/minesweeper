@@ -8,7 +8,7 @@
 
 void print_board(int size, Cell board[][size], bool is_reveal_all);
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     MinesweeperArgs args = parse_minesweeper_args(argc, argv);
     int size = args.size;
     int numMines = args.numMines;

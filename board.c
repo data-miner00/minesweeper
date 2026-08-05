@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include "board.h"
 
-
 void init_board(int size, Cell board[][size]) {
     for (int row = 0; row < size; row++) {
         for (int col = 0; col < size; col++) {
@@ -148,8 +147,6 @@ bool is_lose(int size, Cell board[][size]) {
             }
         }
     }
-            
+
     return false;
 }
-
-
