@@ -49,6 +49,8 @@ int main(int argc, char* argv[]) {
     int size = args.size;
     int numMines = args.numMines;
 
+    srand(time(NULL));
+
     Cell board[size][size];
     init_board(size, board);
     place_mine(size, numMines, board);
@@ -61,7 +63,6 @@ int main(int argc, char* argv[]) {
     noecho();              // don't auto-print typed characters
     keypad(stdscr, TRUE);  // let getch() return arrow keys etc. as single KEY_* constants
     curs_set(1);           // primary cursor
-    srand(time(NULL));
 
     bool is_running = true;
 
