@@ -64,18 +64,22 @@ int main(int argc, char *argv[]) {
 
         switch (ch) {
         case KEY_UP:
+        case 'k':
             if (row > 0)
                 row--;
             break;
         case KEY_DOWN:
+        case 'j':
             if (row < size - 1)
                 row++;
             break;
         case KEY_LEFT:
+        case 'h':
             if (col > 0)
                 col--;
             break;
         case KEY_RIGHT:
+        case 'l':
             if (col < size - 1)
                 col++;
             break;
