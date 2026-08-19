@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     place_mine(size, numMines, board);
     compute_counts(size, board);
 
-    int row = 0, col = 0;
+    int row = 0, col = 0, total_flagged = 0;
 
     initscr();            // enter curses mode, takes over the terminal
     cbreak();             // read input char-by-char, don't wait for Enter
@@ -57,8 +57,9 @@ int main(int argc, char *argv[]) {
         clear();
         draw_board(size, row, col, board, false);
 
-        move(row, col * 2);
+        mvprintw(0, size * 2 + 2, "Total flagged: %d", total_flagged);
 
+        move(row, col * 2);
         refresh();
         int ch = getch();
 
@@ -96,8 +97,13 @@ int main(int argc, char *argv[]) {
             if (board[row][col].is_revealed) {
                 // you have already revealed this cell
             } else {
-                // toggle flag
-                board[row][col].is_flagged = !board[row][col].is_flagged;
+                if (board[row][col].is_flagged) {
+                    total_flagged--;
+                    board[row][col].is_flagged = false;
+                } else {
+                    total_flagged++;
+                    board[row][col].is_flagged = true;
+                }
             }
             break;
         case 'q':
