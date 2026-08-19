@@ -75,3 +75,24 @@ set_tests_properties(
   args_mines_at_capacity_boundary PROPERTIES
   PASS_REGULAR_EXPRESSION "size=3 mines=8"
 )
+
+
+# Test board.c
+add_executable(
+  test_board
+
+  test_board.c
+  ${CMAKE_SOURCE_DIR}/board.c
+)
+
+target_include_directories(
+  test_board
+  PRIVATE ${CMAKE_SOURCE_DIR}
+)
+
+add_test(NAME board_init_board COMMAND test_board init_board)
+add_test(NAME board_place_mine COMMAND test_board place_mine)
+add_test(NAME board_compute_counts COMMAND test_board compute_counts)
+add_test(NAME board_flood_fill COMMAND test_board flood_fill)
+add_test(NAME board_is_win COMMAND test_board is_win)
+add_test(NAME board_is_lose COMMAND test_board is_lose)
