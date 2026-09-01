@@ -27,7 +27,7 @@ The project builds **two executables from shared game logic**:
 - `Minesweeper` (`main.c` + `board.c` + `args.c`) — the original console frontend, `scanf`-driven.
 - `MinesweeperNcurses` (`main_ncurses.c` + `board.c` + `args.c`) — the ncurses frontend: arrow-key cursor movement (indicated solely by the real terminal cursor via `curs_set(1)` + `move()` — an earlier `A_REVERSE`-highlighted cursor cell, stacked on top as a redundant second indicator, was deliberately removed), instant reveal/flag, `start_color()`/`init_pair()`-based color-coding of revealed cell counts (1–8 mapped to distinct `COLOR_PAIR`s), flagged cells, and mines, and win/loss end screens.
 
-`CMakeLists.txt` defines both targets (each built from its own frontend `.c` plus the shared `board.c`/`args.c`), adds `include/` to both include paths, links `MinesweeperNcurses` against `find_package(Curses REQUIRED)`, and calls `enable_testing()` + `add_subdirectory(tests)` to wire up the CTest suite (see Build & run above). `include/shaun.h` is a leftover placeholder header (currently just `int age = 28;`), not used by any real logic yet.
+`CMakeLists.txt` defines both targets (each built from its own frontend `.c` plus the shared `board.c`/`args.c`), links `MinesweeperNcurses` against `find_package(Curses REQUIRED)`, and calls `enable_testing()` + `add_subdirectory(tests)` to wire up the CTest suite (see Build & run above).
 
 Source layout:
 - `cell.h` — the `Cell` struct (see below). Included by both frontends and by `board.c`.

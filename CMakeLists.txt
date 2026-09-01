@@ -22,11 +22,6 @@ add_executable(
   args.c
 )
 
-target_include_directories(
-  ${PROJECT_NAME}
-  PUBLIC "include"
-)
-
 find_package(Curses REQUIRED)
 
 add_executable(
@@ -40,7 +35,6 @@ add_executable(
 
 target_include_directories(
   ${PROJECT_NAME}Ncurses
-  PUBLIC "include"
   PRIVATE ${CURSES_INCLUDE_DIR}
 )
 
