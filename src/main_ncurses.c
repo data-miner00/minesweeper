@@ -115,6 +115,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (is_win(size, board)) {
+        clear();
+        draw_board(size, row, col, board, false);
         mvprintw(size + 2, 0, "You have won!\n");
         refresh();
         getch();
