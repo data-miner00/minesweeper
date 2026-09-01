@@ -17,9 +17,9 @@ add_executable(
   ${PROJECT_NAME}
 
   # Source of executable
-  main.c
-  board.c
-  args.c
+  src/main.c
+  src/board.c
+  src/args.c
 )
 
 find_package(Curses REQUIRED)
@@ -28,9 +28,9 @@ add_executable(
   # ncurses frontend, sharing the same board.c engine.
   ${PROJECT_NAME}Ncurses
 
-  main_ncurses.c
-  board.c
-  args.c
+  src/main_ncurses.c
+  src/board.c
+  src/args.c
 )
 
 target_include_directories(

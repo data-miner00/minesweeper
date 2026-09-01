@@ -2,12 +2,12 @@ add_executable(
   test_args
 
   test_args.c
-  ${CMAKE_SOURCE_DIR}/args.c
+  ${CMAKE_SOURCE_DIR}/src/args.c
 )
 
 target_include_directories(
   test_args
-  PRIVATE ${CMAKE_SOURCE_DIR}
+  PRIVATE ${CMAKE_SOURCE_DIR}/src
 )
 
 # 1. Missing value: --size with nothing after it. The argc guard in
@@ -82,12 +82,12 @@ add_executable(
   test_board
 
   test_board.c
-  ${CMAKE_SOURCE_DIR}/board.c
+  ${CMAKE_SOURCE_DIR}/src/board.c
 )
 
 target_include_directories(
   test_board
-  PRIVATE ${CMAKE_SOURCE_DIR}
+  PRIVATE ${CMAKE_SOURCE_DIR}/src
 )
 
 add_test(NAME board_init_board COMMAND test_board init_board)
