@@ -5,7 +5,6 @@
 #include "cell.h"
 #define TEST_SIZE 3
 
-
 static void test_init_board(void) {
     Cell board[TEST_SIZE][TEST_SIZE];
     init_board(TEST_SIZE, board);
@@ -48,9 +47,9 @@ static void test_compute_counts(void) {
     board[0][0].is_mine = true;
 
     int expected_adjacent_counts[TEST_SIZE][TEST_SIZE] = {
-        { -1, 2, 1 },
-        { 2, -1, 1 },
-        { 1, 1, 1 },
+        {-1, 2, 1},
+        {2, -1, 1},
+        {1, 1, 1},
     };
 
     compute_counts(TEST_SIZE, board);
@@ -70,9 +69,9 @@ static void test_flood_fill(void) {
     board[0][0].is_mine = true;
 
     int expected_adjacent_counts[TEST_SIZE][TEST_SIZE] = {
-        { -1, 1, 0 },
-        { 1, 1, 0 },
-        { 0, 0, 0 },
+        {-1, 1, 0},
+        {1, 1, 0},
+        {0, 0, 0},
     };
 
     // Compute the counts
@@ -90,9 +89,9 @@ static void test_flood_fill(void) {
 
     // Check that the cells were revealed
     bool is_revealed[TEST_SIZE][TEST_SIZE] = {
-        { false, true, true },
-        { true, true, true },
-        { true, true, true },
+        {false, true, true},
+        {true, true, true},
+        {true, true, true},
     };
 
     for (int row = 0; row < TEST_SIZE; row++) {
