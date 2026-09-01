@@ -12,14 +12,13 @@ int main(int argc, char **argv) {
     MinesweeperArgs args = parse_minesweeper_args(argc, argv);
     int size = args.size;
     int numMines = args.numMines;
+    bool isMaterialized = false;
 
     srand(time(NULL));
     printf("Welcome to Minesweeper!\n");
 
     Cell board[size][size];
     init_board(size, board);
-    place_mine(size, numMines, board);
-    compute_counts(size, board);
 
     int row, col;
     char cmd;
@@ -36,6 +35,13 @@ int main(int argc, char **argv) {
         }
 
         if (cmd == 'r') {
+            if (!isMaterialized) {
+                place_mine(size, numMines, row, col, board);
+                compute_counts(size, board);
+
+                isMaterialized = true;
+            }
+
             if (board[row][col].is_revealed) {
                 printf("You have already revealed this cell\n");
                 continue;

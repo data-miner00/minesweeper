@@ -29,8 +29,6 @@ int main(int argc, char *argv[]) {
 
     Cell board[size][size];
     init_board(size, board);
-    place_mine(size, numMines, board);
-    compute_counts(size, board);
 
     int row = 0, col = 0, total_flagged = 0;
 
@@ -52,6 +50,7 @@ int main(int argc, char *argv[]) {
     init_pair(PAIR_MINE, COLOR_RED, COLOR_BLACK);
 
     bool is_running = true;
+    bool is_materialized = false;
 
     while (is_running && !is_win(size, board) && !is_lose(size, board)) {
         clear();
@@ -85,6 +84,13 @@ int main(int argc, char *argv[]) {
                 col++;
             break;
         case 'r':
+            if (!is_materialized) {
+                place_mine(size, numMines, row, col, board);
+                compute_counts(size, board);
+
+                is_materialized = true;
+            }
+
             if (board[row][col].is_revealed) {
                 // you have already revealed this cell
             } else if (board[row][col].is_flagged) {

@@ -20,10 +20,12 @@ static void test_init_board(void) {
 }
 
 static void test_place_mine(void) {
+    int safeRow = 0, safeCol = 0;
+
     Cell board[TEST_SIZE][TEST_SIZE];
     init_board(TEST_SIZE, board);
 
-    place_mine(TEST_SIZE, 1, board); // Can I parameterize this?
+    place_mine(TEST_SIZE, 1, safeRow, safeCol, board); // Can I parameterize this?
 
     int total_mines = 0;
     for (int row = 0; row < TEST_SIZE; row++) {
@@ -34,6 +36,31 @@ static void test_place_mine(void) {
         }
     }
     assert(total_mines == 1);
+}
+
+static void test_place_mine_excludes_safe_cell(void) {
+    int safeRow = 1, safeCol = 1;
+
+    Cell board[TEST_SIZE][TEST_SIZE];
+    init_board(TEST_SIZE, board);
+
+    // Fill every cell but one (8 mines on a 3x3 board) so the safe cell is
+    // the *only* place left for place_mine to skip. If the safeRow/safeCol
+    // exclusion didn't work, it would have nowhere else to put the last
+    // mine and would have to land on the safe cell.
+    place_mine(TEST_SIZE, TEST_SIZE * TEST_SIZE - 1, safeRow, safeCol, board);
+
+    assert(!board[safeRow][safeCol].is_mine);
+
+    int total_mines = 0;
+    for (int row = 0; row < TEST_SIZE; row++) {
+        for (int col = 0; col < TEST_SIZE; col++) {
+            if (board[row][col].is_mine) {
+                total_mines++;
+            }
+        }
+    }
+    assert(total_mines == TEST_SIZE * TEST_SIZE - 1);
 }
 
 static void test_compute_counts(void) {
@@ -152,6 +179,8 @@ int main(int argc, char *argv[]) {
         test_init_board();
     } else if (strcmp(argv[1], "place_mine") == 0) {
         test_place_mine();
+    } else if (strcmp(argv[1], "place_mine_excludes_safe_cell") == 0) {
+        test_place_mine_excludes_safe_cell();
     } else if (strcmp(argv[1], "compute_counts") == 0) {
         test_compute_counts();
     } else if (strcmp(argv[1], "flood_fill") == 0) {

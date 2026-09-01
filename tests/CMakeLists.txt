@@ -92,6 +92,7 @@ target_include_directories(
 
 add_test(NAME board_init_board COMMAND test_board init_board)
 add_test(NAME board_place_mine COMMAND test_board place_mine)
+add_test(NAME board_place_mine_excludes_safe_cell COMMAND test_board place_mine_excludes_safe_cell)
 add_test(NAME board_compute_counts COMMAND test_board compute_counts)
 add_test(NAME board_flood_fill COMMAND test_board flood_fill)
 add_test(NAME board_is_win COMMAND test_board is_win)

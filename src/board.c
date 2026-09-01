@@ -12,7 +12,7 @@ void init_board(int size, Cell board[][size]) {
     }
 }
 
-void place_mine(int size, int numMines, Cell board[][size]) {
+void place_mine(int size, int numMines, int safeRow, int safeCol, Cell board[][size]) {
     for (int mines = 0; mines < numMines; mines++) {
 
         int row;
@@ -21,7 +21,7 @@ void place_mine(int size, int numMines, Cell board[][size]) {
         do {
             row = rand() % size;
             col = rand() % size;
-        } while (board[row][col].is_mine);
+        } while (board[row][col].is_mine || (row == safeRow && col == safeCol));
 
         board[row][col].is_mine = true;
     }

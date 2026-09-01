@@ -3,7 +3,7 @@
 #include "cell.h"
 
 void init_board(int size, Cell board[][size]);
-void place_mine(int size, int numMines, Cell board[][size]);
+void place_mine(int size, int numMines, int safeRow, int safeCol, Cell board[][size]);
 void compute_counts(int size, Cell board[][size]);
 void flood_fill(int size, Cell board[][size], int row, int col);
 bool is_win(int size, Cell board[][size]);
