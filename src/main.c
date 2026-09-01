@@ -24,6 +24,8 @@ int main(int argc, char **argv) {
     int row, col;
     char cmd;
 
+    print_board(size, board, false);
+
     while (true) {
         printf("Enter cmd (f/r/q), row, column (0-%d): ", size - 1);
         scanf(" %c %d %d", &cmd, &row, &col);
