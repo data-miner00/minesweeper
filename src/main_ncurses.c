@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
             } else if (board[row][col].is_flagged) {
                 // you have already flagged this cell
             } else {
-                flood_fill(size, board, row, col);
+                flood_fill_stack(size, board, row, col);
             }
             break;
         case 'f':
