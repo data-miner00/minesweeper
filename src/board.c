@@ -224,6 +224,107 @@ void flood_fill_stack(int size, Cell board[][size], int row, int col) {
     }
 }
 
+// Queue implementation drop-in replacement for flood_fill
+void flood_fill_queue(int size, Cell board[][size], int row, int col) {
+    if (row < 0 || row >= size || col < 0 || col >= size) {
+        return;
+    }
+
+    if (board[row][col].is_revealed || board[row][col].is_flagged) {
+        return;
+    }
+
+    // size * size is always sufficient
+    Coord queue[size * size];
+
+    int head = 0, tail = 0;
+
+    board[row][col].is_revealed = true;
+    queue[tail++] = (Coord){row, col};
+
+    while (head < tail) {
+        Coord coord = queue[head++];
+        int row = coord.row;
+        int col = coord.col;
+
+        if (board[row][col].adjacent_count != 0) {
+            continue;
+        }
+
+        if (row - 1 >= 0 && col - 1 >= 0) {
+            Cell *top_left = &board[row - 1][col - 1];
+
+            if (!top_left->is_revealed && !top_left->is_flagged) {
+                top_left->is_revealed = true;
+                queue[tail++] = (Coord){row - 1, col - 1};
+            }
+        }
+
+        if (row + 1 < size && col - 1 >= 0) {
+            Cell *bottom_left = &board[row + 1][col - 1];
+
+            if (!bottom_left->is_revealed && !bottom_left->is_flagged) {
+                bottom_left->is_revealed = true;
+                queue[tail++] = (Coord){row + 1, col - 1};
+            }
+        }
+
+        if (row - 1 >= 0 && col + 1 < size) {
+            Cell *top_right = &board[row - 1][col + 1];
+
+            if (!top_right->is_revealed && !top_right->is_flagged) {
+                top_right->is_revealed = true;
+                queue[tail++] = (Coord){row - 1, col + 1};
+            }
+        }
+
+        if (row + 1 < size && col + 1 < size) {
+            Cell *bottom_right = &board[row + 1][col + 1];
+
+            if (!bottom_right->is_revealed && !bottom_right->is_flagged) {
+                bottom_right->is_revealed = true;
+                queue[tail++] = (Coord){row + 1, col + 1};
+            }
+        }
+
+        if (row - 1 >= 0) {
+            Cell *top_cell = &board[row - 1][col];
+
+            if (!top_cell->is_revealed && !top_cell->is_flagged) {
+                top_cell->is_revealed = true;
+                queue[tail++] = (Coord){row - 1, col};
+            }
+        }
+
+        if (row + 1 < size) {
+            Cell *bottom = &board[row + 1][col];
+
+            if (!bottom->is_revealed && !bottom->is_flagged) {
+                bottom->is_revealed = true;
+                queue[tail++] = (Coord){row + 1, col};
+            }
+        }
+
+        if (col - 1 >= 0) {
+            Cell *left = &board[row][col - 1];
+
+            if (!left->is_revealed && !left->is_flagged) {
+                left->is_revealed = true;
+                queue[tail++] = (Coord){row, col - 1};
+            }
+        }
+
+        if (col + 1 < size) {
+            Cell *right = &board[row][col + 1];
+
+            if (!right->is_revealed && !right->is_flagged) {
+                right->is_revealed = true;
+                queue[tail++] = (Coord){row, col + 1};
+            }
+        }
+    }
+}
+
 // When all cells that are not mines are revealed, the game is won
 bool is_win(int size, Cell board[][size]) {
     for (int row = 0; row < size; row++) {

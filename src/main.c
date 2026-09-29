@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            flood_fill(size, board, row, col);
+            flood_fill_queue(size, board, row, col);
 
             if (board[row][col].is_mine) {
                 printf("You have lost!\n");
