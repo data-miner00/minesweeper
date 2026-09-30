@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
 
     srand(time(NULL));
 
+    // Using Variable Length Array
     Cell board[size][size];
     init_board(size, board);
 

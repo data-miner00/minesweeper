@@ -17,7 +17,14 @@ int main(int argc, char **argv) {
     srand(time(NULL));
     printf("Welcome to Minesweeper!\n");
 
-    Cell board[size][size];
+    // Using malloc manual memory management
+    Cell (*board)[size] = malloc(sizeof(Cell[size][size]));
+
+    if (board == NULL) {
+        fprintf(stderr, "Error allocating board\n");
+        return 1;
+    }
+
     init_board(size, board);
 
     int row, col;
@@ -77,6 +84,8 @@ int main(int argc, char **argv) {
             printf("Invalid command\n");
         }
     }
+
+    free(board);
 
     return 0;
 }
