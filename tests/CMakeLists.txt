@@ -97,3 +97,21 @@ add_test(NAME board_compute_counts COMMAND test_board compute_counts)
 add_test(NAME board_flood_fill COMMAND test_board flood_fill)
 add_test(NAME board_is_win COMMAND test_board is_win)
 add_test(NAME board_is_lose COMMAND test_board is_lose)
+
+
+# Test the educational stack/queue-based flood fill variants against the
+# same expected result as board_flood_fill above.
+add_executable(
+  test_flood_fill_variants
+
+  test_flood_fill_variants.c
+  ${CMAKE_SOURCE_DIR}/src/board.c
+)
+
+target_include_directories(
+  test_flood_fill_variants
+  PRIVATE ${CMAKE_SOURCE_DIR}/src
+)
+
+add_test(NAME board_flood_fill_stack COMMAND test_flood_fill_variants flood_fill_stack)
+add_test(NAME board_flood_fill_queue COMMAND test_flood_fill_variants flood_fill_queue)
